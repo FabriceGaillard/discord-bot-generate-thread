@@ -44,11 +44,6 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  // 🔥 Supprime embed uniquement si lien
-  if (hasLink) {
-    message.suppressEmbeds(true).catch(() => {});
-  }
-
   // 🧵 Crée thread
   await message.startThread({
     name: `Discussion - ${message.author.username}`,
