@@ -2,7 +2,10 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import 'dotenv/config';
 
 const TOKEN = process.env.DISCORD_TOKEN;
-const CHANNEL_ID = process.env.CHANNEL_ID;
+const CHANNEL_IDS =
+  process.env.CHANNEL_IDS?.split(',')
+    .map((id) => id.trim())
+    .filter(Boolean) ?? [];
 
 if (!TOKEN) {
   console.error('DISCORD_TOKEN manquant');
@@ -24,7 +27,7 @@ client.once('ready', () => {
 client.on('messageCreate', async (message) => {
   try {
     if (message.author.bot) return;
-    if (message.channel.id !== CHANNEL_ID) return;
+    if (!CHANNEL_IDS.includes(message.channel.id)) return;
 
     const hasLink = /(https?:\/\/[^\s]+)/gi.test(message.content);
 
