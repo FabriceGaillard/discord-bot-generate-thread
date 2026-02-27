@@ -1,12 +1,20 @@
-# fly.toml app configuration file generated for lemon-snug on 2026-02-01T20:55:27Z
+# fly.toml app configuration file generated for little-thread on 2026-02-27T20:17:48Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'lemon-snug'
-primary_region = 'cdg'
+app = 'little-thread'
+primary_region = 'ams'
 
 [build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
 
 [[vm]]
   memory = '1gb'
