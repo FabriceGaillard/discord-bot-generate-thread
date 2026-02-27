@@ -25,38 +25,35 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', async (message) => {
-  try {
-    if (message.author.bot) return;
-    if (!CHANNEL_IDS.includes(message.channel.id)) return;
+  if (message.author.bot) return;
+  if (!CHANNEL_IDS.includes(message.channel.id)) return;
 
-    const hasLink = /(https?:\/\/[^\s]+)/gi.test(message.content);
+  const hasLink = /(https?:\/\/[^\s]+)/gi.test(message.content);
+  const hasAttachment = message.attachments.size > 0;
 
-    // ✅ CAS AVEC LIEN → créer thread
-    if (hasLink) {
-      setTimeout(() => {
-        message.suppressEmbeds(true).catch(() => {});
-      }, 300);
-
-      await message.startThread({
-        name: `Discussion - ${message.author.username}`,
-        autoArchiveDuration: 60,
-      });
-
-      return;
-    }
-
-    // ❌ PAS DE LIEN → message temporaire
+  if (!hasLink && !hasAttachment) {
     const warnMsg = await message.reply({
-      content: `❌ **${message.author.username}**, ton message doit contenir un lien.`,
-      ephemeral: true,
+      content: `❌ ${message.author}, ton message doit contenir un lien ou une pièce jointe.`,
     });
 
-    await message.delete();
+    setTimeout(() => {
+      warnMsg.delete().catch(() => {});
+      message.delete().catch(() => {});
+    }, 3000);
 
-    setTimeout(() => warnMsg.delete().catch((e) => console.error(e)), 3000);
-  } catch (err) {
-    console.error('Erreur:', err);
+    return;
   }
+
+  // 🔥 Supprime embed uniquement si lien
+  if (hasLink) {
+    message.suppressEmbeds(true).catch(() => {});
+  }
+
+  // 🧵 Crée thread
+  await message.startThread({
+    name: `Discussion - ${message.author.username}`,
+    autoArchiveDuration: 60,
+  });
 });
 
 client.login(TOKEN);
