@@ -33,12 +33,15 @@ client.on('messageCreate', async (message) => {
 
     // ✅ CAS AVEC LIEN → créer thread
     if (hasLink) {
-      if (!message.hasThread) {
-        await message.startThread({
-          name: `Discussion - ${message.author.username}`,
-          autoArchiveDuration: 60, // 1h
-        });
-      }
+      setTimeout(() => {
+        message.suppressEmbeds(true).catch(() => {});
+      }, 300);
+
+      await message.startThread({
+        name: `Discussion - ${message.author.username}`,
+        autoArchiveDuration: 60,
+      });
+
       return;
     }
 
